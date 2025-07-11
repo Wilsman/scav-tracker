@@ -387,6 +387,32 @@
               </tbody>
             </table>
           </div>
+
+          <div class="card">
+            <h2>Karma Effects</h2>
+            <div style="font-size: 0.8rem; line-height: 1.4;">
+              <p style="margin-bottom: 8px; font-weight: 500; color: var(--accent);">Your Scav karma affects:</p>
+              <ul style="margin: 0; padding-left: 16px; list-style-type: disc;">
+                <li style="margin-bottom: 4px;">Car extraction fees</li>
+                <li style="margin-bottom: 4px;">BTR item extraction trunk size</li>
+                <li style="margin-bottom: 4px;">Transit delivery inventory size</li>
+                <li style="margin-bottom: 4px;">Scav case turnaround time</li>
+                <li style="margin-bottom: 4px;">Fence's payout rates</li>
+                <li style="margin-bottom: 4px;">Scav cooldown time</li>
+                <li style="margin-bottom: 4px;">Available extractions</li>
+                <li style="margin-bottom: 4px;">Scav gear quality</li>
+                <li style="margin-bottom: 4px;">AI-Scav command following</li>
+              </ul>
+              
+              <div style="margin-top: 12px; padding: 8px; background: rgba(92, 107, 192, 0.1); border-radius: 4px; border-left: 3px solid var(--accent);">
+                <p style="margin: 0; font-size: 0.75rem; font-weight: 500;">Special Thresholds:</p>
+                <p style="margin: 4px 0 0 0; font-size: 0.7rem;"><strong>+6:</strong> Fence 30% discount tab, AI-Scav support</p>
+                <p style="margin: 2px 0 0 0; font-size: 0.7rem;"><strong>-5:</strong> AI-Scavs hostile, BTR services disabled</p>
+              </div>
+              
+              <p style="margin-top: 8px; font-size: 0.7rem; font-style: italic; color: #aaa;">Effects change at whole numbers (+1, -4, etc.)</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -400,11 +426,9 @@
         "Ground Zero",
       ];
       const coopMaps = [
-        "Interchange",
         "Customs",
-        "Reserve",
-        "Woods",
         "Streets of Tarkov",
+        "Interchange",
         "Ground Zero",
       ];
       let totalKarma = 0,
@@ -459,12 +483,10 @@
       }
 
       const coopTooltips = {
-        "Interchange": "The Scav Camp is a co-op extraction point, located behind containers opposite the mall entrance.",
-        "Customs": "The Boiler Room Basement, accessible from the Pinewood Hotel area (Stairs down from the back door facing Kilmoff Street), and the Dorms SUV require cooperation between PMCs and Scavs to extract.",
-        "Reserve": "The Scav Lands area on the map allows for co-op extraction.",
-        "Woods": "The Factory Gate and SUV Bridge are co-op extracts.",
-        "Streets of Tarkov": "The Pinewood Hotel basement, accessed from the back door facing Kilmoff street, is a co-op extraction point.",
-        "Ground Zero": "This map also features a co-op extract, particularly easy to achieve as a Scav."
+        "Customs": "Boiler Room Basement – in the boiler building with two chimneys, Construction area. This is the only PMC + Scav co-op exit on Customs.",
+        "Streets of Tarkov": "Pinewood Basement – northeastern staircase inside the Pinewood Hotel. This is the sole co-op extraction point for Streets.",
+        "Interchange": "Scav Camp – behind the container yard, nearly directly opposite the main entrance.",
+        "Ground Zero": "Scav Checkpoint extract – accessible only in PMC + Scav co-op."
       };
 
       const carTooltips = {
