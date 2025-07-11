@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scav Karma Tracker</title>
+  <style>
+    body { background-color: #121212; color: #e0e0e0; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    h1, h2 { color: #fff; }
+    button, select { background-color: #1f1f1f; border: 1px solid #333; color: #e0e0e0; padding: 6px 10px; margin: 4px; border-radius: 4px; cursor: pointer; }
+    button:hover, select:hover { background-color: #333; }
+    .action-row { margin-bottom: 12px; }
+    .map-row { margin-bottom: 16px; }
+    .info-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .info-table th, .info-table td { border: 1px solid #333; padding: 8px; text-align: left; }
+    .info-table th { background-color: #1f1f1f; }
+    .info-table td { background-color: #181818; }
+    input { background-color: #1f1f1f; border: 1px solid #333; color: #e0e0e0; padding: 6px; margin-right: 8px; border-radius: 4px; width: 80px; }
+  </style>
+</head>
+<body>
+  <h1>Scav Karma Tracker</h1>
+
+  <div class="action-row">
+    <input id="startKarmaInput" type="number" step="0.01" placeholder="Start Karma" />
+    <button id="setKarmaBtn">Set Starting Karma</button>
+  </div>
+
+  <h2>Total Karma: <span id="totalKarma">0.00</span></h2>
+
+  <h2>PMC Car Extracts by Map</h2>
+  <div id="mapsContainer"></div>
+
+  <div class="action-row">
+    <button id="coopExtractBtn">+ Co-op Extraction</button>
+    <button id="coopExtractDecBtn">−</button>
+    <span>Count: <span id="coopCount">0</span></span>
+  </div>
+
+  <div class="action-row">
+    <button id="scavExtractBtn">+ Extract as Scav</button>
+    <button id="scavExtractDecBtn">−</button>
+    <span>Count: <span id="scavCount">0</span></span>
+  </div>
+
+  <div class="action-row">
+    <button data-delta="0.01" class="taskBtn">Task +0.01</button>
+    <button data-delta="0.03" class="taskBtn">Task +0.03</button>
+    <button data-delta="0.05" class="taskBtn">Task +0.05</button>
+  </div>
+
+  <div class="action-row">
+    <button data-delta="-0.1" id="killPlayerScavBtn">Kill Player Scav</button>
+    <button data-delta="-0.03" class="aiKillBtn">Kill AI Scav (-0.03)</button>
+    <button data-delta="-0.05" class="aiKillBtn">Kill AI Scav (-0.05)</button>
+  </div>
+
+  <div class="action-row">
+    <button id="customAddBtn">Custom Change</button>
+  </div>
+
+  <button id="resetBtn" style="margin-top: 20px; background-color: #b71c1c;">Reset All</button>
+
+  <table class="info-table">
+    <thead><tr><th>Action</th><th>Delta (karma)</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Car Extraction</td><td>+0.25 / count</td><td>PMC only, each map separate</td></tr>
+      <tr><td>Co-op Extraction</td><td>+0.25 / count</td><td>Scav or PMC</td></tr>
+      <tr><td>Extract as Scav</td><td>+0.01</td><td>Any extract as Scav</td></tr>
+      <tr><td>Scav Task</td><td>+0.01 to +0.05</td><td>Based on task reward</td></tr>
+      <tr><td>Kill Player Scav</td><td>-0.1</td><td>Player Scav penalty</td></tr>
+      <tr><td>Kill AI Scav</td><td>-0.03 to -0.05</td><td>AI Scav penalty</td></tr>
+      <tr><td>Custom</td><td>±?</td><td>Enter any karma change</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const maps = ["Woods","Customs","Interchange","Streets of Tarkov","Ground Zero"];
+    let totalKarma = 0, coopCount = 0, scavCount = 0;
+    const mapCounts = {};
+
+    const totalKarmaEl = document.getElementById('totalKarma');
+    const coopCountEl = document.getElementById('coopCount');
+    const scavCountEl = document.getElementById('scavCount');
+    const mapsContainer = document.getElementById('mapsContainer');
+
+    function saveState() {
+      const state = { totalKarma, coopCount, scavCount, mapCounts };
+      localStorage.setItem('scavKarmaState', JSON.stringify(state));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem('scavKarmaState');
+      if (saved) {
+        const state = JSON.parse(saved);
+        totalKarma = state.totalKarma || 0;
+        coopCount = state.coopCount || 0;
+        scavCount = state.scavCount || 0;
+        Object.assign(mapCounts, state.mapCounts);
+      }
+    }
+
+    function updateDisplay() {
+      totalKarmaEl.textContent = totalKarma.toFixed(2);
+      coopCountEl.textContent = coopCount;
+      scavCountEl.textContent = scavCount;
+      maps.forEach(map => {
+        document.getElementById(map+'Count').textContent = mapCounts[map] || 0;
+      });
+      saveState();
+    }
+
+    function createMapRows() {
+      maps.forEach(map => {
+        mapCounts[map] = mapCounts[map] || 0;
+        const row = document.createElement('div');
+        row.className = 'map-row';
+        row.innerHTML = `
+          <strong>${map}</strong>
+          <button id="${map}Inc">+ Extract</button>
+          <button id="${map}Dec">−</button>
+          Count: <span id="${map}Count">0</span>
+        `;
+        mapsContainer.appendChild(row);
+
+        document.getElementById(map+'Inc').addEventListener('click', () => {
+          mapCounts[map]++;
+          totalKarma += 0.25 / mapCounts[map];
+          updateDisplay();
+        });
+        document.getElementById(map+'Dec').addEventListener('click', () => {
+          if (mapCounts[map] > 0) {
+            totalKarma -= 0.25 / mapCounts[map];
+            mapCounts[map]--;
+            updateDisplay();
+          }
+        });
+      });
+    }
+
+    document.getElementById('setKarmaBtn').addEventListener('click', () => {
+      const input = parseFloat(document.getElementById('startKarmaInput').value);
+      if (!isNaN(input)) {
+        totalKarma = input;
+        coopCount = 0;
+        scavCount = 0;
+        maps.forEach(m => mapCounts[m] = 0);
+        updateDisplay();
+      } else alert('Invalid starting karma');
+    });
+
+    createMapRows();
+    loadState();
+    updateDisplay();
+
+    document.getElementById('coopExtractBtn').addEventListener('click', () => { coopCount++; totalKarma += 0.25 / coopCount; updateDisplay(); });
+    document.getElementById('coopExtractDecBtn').addEventListener('click', () => { if (coopCount>0) { totalKarma -= 0.25/coopCount; coopCount--; updateDisplay(); }});
+
+    document.getElementById('scavExtractBtn').addEventListener('click', () => { scavCount++; totalKarma += 0.01; updateDisplay(); });
+    document.getElementById('scavExtractDecBtn').addEventListener('click', () => { if (scavCount>0) { scavCount--; totalKarma -= 0.01; updateDisplay(); }});
+
+    document.querySelectorAll('.taskBtn').forEach(btn => btn.addEventListener('click', () => { totalKarma += parseFloat(btn.dataset.delta); updateDisplay(); }));
+
+    document.getElementById('killPlayerScavBtn').addEventListener('click', e => { totalKarma += parseFloat(e.target.dataset.delta); updateDisplay(); });
+    document.querySelectorAll('.aiKillBtn').forEach(btn => btn.addEventListener('click', () => { totalKarma += parseFloat(btn.dataset.delta); updateDisplay(); }));
+
+    document.getElementById('customAddBtn').addEventListener('click', () => {
+      const val = parseFloat(prompt('Enter karma change:'));
+      if (!isNaN(val)) { totalKarma += val; updateDisplay(); } else alert('Invalid number');
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Reset all?')) {
+        totalKarma = 0;
+        coopCount = 0;
+        scavCount = 0;
+        maps.forEach(m => mapCounts[m] = 0);
+        updateDisplay();
+      }
+    });
+  </script>
+</body>
+</html>
