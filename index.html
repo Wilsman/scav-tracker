@@ -475,12 +475,14 @@
         "Interchange",
         "Streets of Tarkov",
         "Ground Zero",
+        "Shoreline"
       ];
       const coopMaps = [
         "Customs",
         "Streets of Tarkov",
         "Interchange",
         "Ground Zero",
+        "Shoreline"
       ];
       let totalKarma = 0,
         scavCount = 0,
@@ -554,7 +556,7 @@
         cooldownKarmaEl.textContent = totalKarma.toFixed(2);
         
         // Determine base time - use custom if provided, otherwise default
-        let baseTime = customBaseTime || 49;  // Default to 45 minutes if no custom time set
+        let baseTime = customBaseTime || 50;  // Default to 45 minutes if no custom time set
         
         if (baseTime <= 0) {
           cooldownTimeEl.textContent = "-- min";
@@ -618,7 +620,8 @@
         "Customs": "Boiler Room Basement – in the boiler building with two chimneys, Construction area. This is the only PMC + Scav co-op exit on Customs.",
         "Streets of Tarkov": "Pinewood Basement – northeastern staircase inside the Pinewood Hotel. This is the sole co-op extraction point for Streets.",
         "Interchange": "Scav Camp – behind the container yard, nearly directly opposite the main entrance.",
-        "Ground Zero": "Scav Checkpoint extract – accessible only in PMC + Scav co-op."
+        "Ground Zero": "Scav Checkpoint extract – accessible only in PMC + Scav co-op.",
+        "Shoreline": "North side of the new area. Top north-east side of the map. If you just follow the mountain wall running along the north side of the map, you should walk up on it."
       };
 
       const carTooltips = {
@@ -626,7 +629,8 @@
         "Interchange": "The Power Station (or 'Power Station V-Ex') is the car extract on Interchange, located near the power plant in the northeastern part of the map.",
         "Woods": "Woods features a car extract, often located near the Eastern Village.",
         "Streets of Tarkov": "This map has car extracts, though specific locations might vary or be added with updates.",
-        "Ground Zero": "The newest map, Ground Zero, has a car extract called Police Cordon V-Ex."
+        "Ground Zero": "The newest map, Ground Zero, has a car extract called Police Cordon V-Ex.",
+        "Shoreline": "Smuggler's Path - Cattle Farm, south-east from the car extract."
       };
 
       function createMapRows(
